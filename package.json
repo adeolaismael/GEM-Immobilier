@@ -9,9 +9,17 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.99.2",
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/mapbox-gl": "^3.4.1",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^0.577.0",
+    "mapbox-gl": "^3.20.0",
     "next": "16.1.7",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-map-gl": "^8.1.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
