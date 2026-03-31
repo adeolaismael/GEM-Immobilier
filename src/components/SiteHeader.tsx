@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "framer-motion";
 
@@ -22,6 +23,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -36,6 +38,10 @@ export function SiteHeader() {
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -177,57 +183,62 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {menuOpen ? (
-        <div
-          id="site-mobile-menu"
-          className="fixed inset-0 z-[100] md:hidden"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Navigation"
-        >
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/40"
-            aria-label="Fermer le menu"
-            onClick={() => setMenuOpen(false)}
-          />
-          <nav
-            className="absolute top-0 right-0 flex h-full w-[min(100%,20rem)] flex-col gap-1 border-l border-black/10 bg-white px-5 py-6 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Menu</p>
-            {nav.map((item) => {
-              const active = isActive(item.href, pathname);
-              return (
+      {mounted && menuOpen
+        ? createPortal(
+            <div
+              id="site-mobile-menu"
+              className="fixed inset-0 z-[200] md:hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Navigation"
+            >
+              <button
+                type="button"
+                className="absolute inset-0 bg-black/40"
+                aria-label="Fermer le menu"
+                onClick={() => setMenuOpen(false)}
+              />
+              <nav
+                className="absolute top-0 right-0 flex h-full min-h-0 w-[min(100%,20rem)] flex-col gap-1 overflow-y-auto border-l border-black/10 bg-white px-5 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">
+                  Menu
+                </p>
+                {nav.map((item) => {
+                  const active = isActive(item.href, pathname);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`rounded-lg px-3 py-3 text-base transition-colors hover:bg-black/[0.04] ${
+                        active ? "font-semibold text-[color:var(--brand)]" : "text-[color:var(--foreground)]"
+                      }`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
                 <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`rounded-lg px-3 py-3 text-base transition-colors hover:bg-black/[0.04] ${
-                    active ? "font-semibold text-[color:var(--brand)]" : "text-[color:var(--foreground)]"
-                  }`}
+                  href="/biens"
+                  className="mt-1 rounded-lg px-3 py-3 text-base text-[color:var(--foreground)] transition-colors hover:bg-black/[0.04]"
                   onClick={() => setMenuOpen(false)}
                 >
-                  {item.label}
+                  Rechercher une offre
                 </Link>
-              );
-            })}
-            <Link
-              href="/biens"
-              className="mt-1 rounded-lg px-3 py-3 text-base text-[color:var(--foreground)] transition-colors hover:bg-black/[0.04]"
-              onClick={() => setMenuOpen(false)}
-            >
-              Rechercher une offre
-            </Link>
-            <Link
-              href="/contact"
-              className="mt-4 inline-flex h-11 items-center justify-center rounded-lg bg-[color:var(--brand)] px-4 text-sm font-medium text-white shadow-soft"
-              onClick={() => setMenuOpen(false)}
-            >
-              Nous-contactez
-            </Link>
-          </nav>
-        </div>
-      ) : null}
+                <Link
+                  href="/contact"
+                  className="mt-4 inline-flex h-11 shrink-0 items-center justify-center rounded-lg bg-[color:var(--brand)] px-4 text-sm font-medium text-white shadow-soft"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Nous-contactez
+                </Link>
+              </nav>
+            </div>,
+            document.body,
+          )
+        : null}
     </motion.header>
   );
 }
