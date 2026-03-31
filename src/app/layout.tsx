@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/SiteFooter";
+import { PublicSiteFooter } from "@/components/PublicSiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getMetadataBase } from "@/lib/site-url";
 
@@ -48,7 +49,9 @@ export default function RootLayout({
         <div className="min-h-screen">
           <SiteHeader />
           {children}
-          <SiteFooter />
+          <PublicSiteFooter>
+            <SiteFooter />
+          </PublicSiteFooter>
         </div>
       </body>
     </html>

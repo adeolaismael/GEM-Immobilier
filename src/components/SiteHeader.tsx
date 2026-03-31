@@ -6,6 +6,10 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "framer-motion";
+import { createBrowserSupabaseClient } from "@/lib/supabase";
+
+/** Actif seulement après « Voir le site » depuis l’admin (même onglet). */
+const ADMIN_SITE_PREVIEW_KEY = "gem_admin_site_preview";
 
 const nav = [
   { href: "/", label: "Accueil" },
@@ -19,12 +23,59 @@ function isActive(href: string, pathname: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
+/** Espace connecté (dashboard) : pas la page de connexion. */
+function isAdminAppShell(path: string | null): boolean {
+  if (!path) return false;
+  return path.startsWith("/admin") && !path.startsWith("/admin/login");
+}
+
 export function SiteHeader() {
   const pathname = usePathname();
+  const adminShell = isAdminAppShell(pathname);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [hasAdminSession, setHasAdminSession] = useState(false);
+  const [adminSitePreview, setAdminSitePreview] = useState(false);
   const reduceMotion = useReducedMotion();
+  const showAdminReturn = hasAdminSession && adminSitePreview;
+
+  useEffect(() => {
+    const supabase = createBrowserSupabaseClient();
+    const applySession = (session: unknown) => {
+      setHasAdminSession(!!session);
+      if (!session) {
+        try {
+          sessionStorage.removeItem(ADMIN_SITE_PREVIEW_KEY);
+        } catch {
+          /* ignore */
+        }
+        setAdminSitePreview(false);
+      }
+    };
+    supabase.auth.getSession().then(({ data }) => applySession(data.session));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => applySession(session));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (isAdminAppShell(pathname)) {
+      try {
+        sessionStorage.removeItem(ADMIN_SITE_PREVIEW_KEY);
+      } catch {
+        /* ignore */
+      }
+      setAdminSitePreview(false);
+      return;
+    }
+    try {
+      setAdminSitePreview(sessionStorage.getItem(ADMIN_SITE_PREVIEW_KEY) === "1");
+    } catch {
+      setAdminSitePreview(false);
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,8 +118,11 @@ export function SiteHeader() {
       }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.4, ease: "easeOut" }}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        <Link href="/" className="flex items-center gap-2">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+        <Link
+          href={adminShell ? "/admin/dashboard" : "/"}
+          className="flex shrink-0 items-center gap-2"
+        >
           <span className="text-sm font-semibold leading-tight tracking-wide text-[color:var(--brand)]">
             GEM
             <br />
@@ -76,6 +130,23 @@ export function SiteHeader() {
           </span>
         </Link>
 
+        {adminShell ? (
+          <Link
+            href="/"
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-black/15 bg-white px-4 text-sm font-medium text-[color:var(--foreground)] shadow-sm transition-colors hover:bg-black/[0.04]"
+            onClick={() => {
+              try {
+                sessionStorage.setItem(ADMIN_SITE_PREVIEW_KEY, "1");
+              } catch {
+                /* ignore */
+              }
+            }}
+          >
+            Voir le site
+          </Link>
+        ) : null}
+
+        {!adminShell ? (
         <nav className="hidden items-center gap-8 text-sm text-[color:var(--foreground)] md:flex">
           {nav.map((item) => {
             const active = isActive(item.href, pathname);
@@ -153,8 +224,19 @@ export function SiteHeader() {
               style={{ borderRadius: "9999px" }}
             />
           </Link>
-        </nav>
 
+          {showAdminReturn ? (
+            <Link
+              href="/admin/dashboard"
+              className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg border border-black/15 bg-white px-4 text-sm font-medium text-[color:var(--foreground)] shadow-sm transition-colors hover:bg-black/[0.04]"
+            >
+              Espace admin
+            </Link>
+          ) : null}
+        </nav>
+        ) : null}
+
+        {!adminShell ? (
         <div className="flex items-center gap-2 md:hidden">
           <button
             type="button"
@@ -174,16 +256,26 @@ export function SiteHeader() {
               </svg>
             )}
           </button>
+          {showAdminReturn ? (
+            <Link
+              href="/admin/dashboard"
+              className="inline-flex h-10 max-w-[7.5rem] shrink-0 items-center justify-center truncate rounded-lg border border-black/15 bg-white px-2 text-xs font-medium text-[color:var(--foreground)] shadow-sm transition-colors hover:bg-black/[0.04] sm:max-w-none sm:px-3 sm:text-sm"
+              title="Retour au tableau de bord"
+            >
+              Espace admin
+            </Link>
+          ) : null}
           <Link
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-[color:var(--brand)] px-4 text-sm font-medium text-white shadow-soft transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg bg-[color:var(--brand)] px-4 text-sm font-medium text-white shadow-soft transition-transform hover:scale-[1.02] active:scale-[0.98]"
             href="/contact"
           >
             Contact
           </Link>
         </div>
+        ) : null}
       </div>
 
-      {mounted && menuOpen
+      {!adminShell && mounted && menuOpen
         ? createPortal(
             <div
               id="site-mobile-menu"
@@ -205,6 +297,15 @@ export function SiteHeader() {
                 <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">
                   Menu
                 </p>
+                {showAdminReturn ? (
+                  <Link
+                    href="/admin/dashboard"
+                    className="mb-2 rounded-lg border border-[color:var(--brand)]/35 bg-[color:var(--brand)]/10 px-3 py-3 text-base font-semibold text-[color:var(--brand)] transition-colors hover:bg-[color:var(--brand)]/15"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Espace admin
+                  </Link>
+                ) : null}
                 {nav.map((item) => {
                   const active = isActive(item.href, pathname);
                   return (
