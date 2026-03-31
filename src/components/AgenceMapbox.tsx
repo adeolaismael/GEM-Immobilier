@@ -22,7 +22,7 @@ export function AgenceMapbox({
   height = 380,
 }: Props) {
   const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-  const [popupOpen, setPopupOpen] = useState(true);
+  const [popupOpen, setPopupOpen] = useState(false);
 
   if (!token) {
     return (
@@ -53,6 +53,7 @@ export function AgenceMapbox({
         style={{ width: "100%", height: "100%" }}
         mapStyle={MAP_STYLE}
         attributionControl
+        keyboard={false}
       >
         <Marker
           longitude={longitude}

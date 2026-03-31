@@ -21,6 +21,7 @@ function isActive(href: string, pathname: string): boolean {
 export function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -31,6 +32,24 @@ export function SiteHeader() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
 
   return (
     <motion.header
@@ -130,13 +149,85 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <Link
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-[color:var(--brand)] px-5 text-sm font-medium text-white shadow-soft transition-transform hover:scale-[1.02] active:scale-[0.98] md:hidden"
-          href="/contact"
-        >
-          Nous-contactez
-        </Link>
+        <div className="flex items-center gap-2 md:hidden">
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-black/10 bg-white text-[color:var(--foreground)] transition-colors hover:bg-black/[0.04]"
+            aria-expanded={menuOpen}
+            aria-controls="site-mobile-menu"
+            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            {menuOpen ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+          <Link
+            className="inline-flex h-10 items-center justify-center rounded-lg bg-[color:var(--brand)] px-4 text-sm font-medium text-white shadow-soft transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            href="/contact"
+          >
+            Contact
+          </Link>
+        </div>
       </div>
+
+      {menuOpen ? (
+        <div
+          id="site-mobile-menu"
+          className="fixed inset-0 z-[100] md:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            aria-label="Fermer le menu"
+            onClick={() => setMenuOpen(false)}
+          />
+          <nav
+            className="absolute top-0 right-0 flex h-full w-[min(100%,20rem)] flex-col gap-1 border-l border-black/10 bg-white px-5 py-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Menu</p>
+            {nav.map((item) => {
+              const active = isActive(item.href, pathname);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`rounded-lg px-3 py-3 text-base transition-colors hover:bg-black/[0.04] ${
+                    active ? "font-semibold text-[color:var(--brand)]" : "text-[color:var(--foreground)]"
+                  }`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+            <Link
+              href="/biens"
+              className="mt-1 rounded-lg px-3 py-3 text-base text-[color:var(--foreground)] transition-colors hover:bg-black/[0.04]"
+              onClick={() => setMenuOpen(false)}
+            >
+              Rechercher une offre
+            </Link>
+            <Link
+              href="/contact"
+              className="mt-4 inline-flex h-11 items-center justify-center rounded-lg bg-[color:var(--brand)] px-4 text-sm font-medium text-white shadow-soft"
+              onClick={() => setMenuOpen(false)}
+            >
+              Nous-contactez
+            </Link>
+          </nav>
+        </div>
+      ) : null}
     </motion.header>
   );
 }
