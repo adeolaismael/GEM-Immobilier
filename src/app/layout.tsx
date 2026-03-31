@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { getMetadataBase } from "@/lib/site-url";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   description:
     "GEM Immobilier accompagne vos projets immobiliers : conseil, estimation, vente, achat et investissement.",
   applicationName: "GEM Immobilier",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com"),
+  metadataBase: getMetadataBase(),
   alternates: {
     canonical: "/",
   },

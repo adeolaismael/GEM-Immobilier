@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { SERVICE_SLUGS } from "@/lib/services-catalog";
+import { getSiteUrl } from "@/lib/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://example.com";
+  const baseUrl = getSiteUrl().replace(/\/$/, "");
   const now = new Date();
 
   const routes = [
