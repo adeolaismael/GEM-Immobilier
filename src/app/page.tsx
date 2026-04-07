@@ -37,6 +37,24 @@ export default async function Home() {
       name: c.t2_name,
       city: c.t2_city,
     },
+    {
+      title: c.t3_title,
+      body: c.t3_body,
+      name: c.t3_name,
+      city: c.t3_city,
+    },
+    {
+      title: c.t4_title,
+      body: c.t4_body,
+      name: c.t4_name,
+      city: c.t4_city,
+    },
+    {
+      title: c.t5_title,
+      body: c.t5_body,
+      name: c.t5_name,
+      city: c.t5_city,
+    },
   ];
 
   return (
@@ -119,30 +137,45 @@ export default async function Home() {
             </h2>
           </div>
           <div className="grid gap-6">
-            {testimonials.map((t, i) => (
-              <article
-                key={i}
-                className="rounded-2xl bg-white p-6 ring-1 ring-[color:var(--card-border)] shadow-soft"
-              >
-                <div className="flex gap-1 text-[color:var(--brand)]" aria-hidden="true">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 17.3l-6.2 3.6 1.6-7.1L2 9.6l7.3-.6L12 2.5l2.7 6.5 7.3.6-5.4 4.2 1.6 7.1L12 17.3z" />
-                    </svg>
-                  ))}
-                </div>
-                <h3 className="mt-4 text-base font-extrabold">
-                  &ldquo;{t.title}&rdquo;
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-[color:var(--muted)]">
-                  {t.body}
-                </p>
-                <div className="mt-5 text-sm font-semibold">
-                  {t.name}{" "}
-                  <span className="text-[color:var(--muted)]">• {t.city}</span>
-                </div>
-              </article>
-            ))}
+            {testimonials.map((t, i) => {
+              const n = t.name.trim();
+              const ci = t.city.trim();
+              const body = t.body.trim();
+              return (
+                <article
+                  key={i}
+                  className="rounded-2xl bg-white p-6 ring-1 ring-[color:var(--card-border)] shadow-soft"
+                >
+                  <div className="flex gap-1 text-[color:var(--brand)]" aria-hidden="true">
+                    {Array.from({ length: 5 }).map((_, j) => (
+                      <svg key={j} width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 17.3l-6.2 3.6 1.6-7.1L2 9.6l7.3-.6L12 2.5l2.7 6.5 7.3.6-5.4 4.2 1.6 7.1L12 17.3z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <h3 className="mt-4 text-base font-extrabold leading-snug">
+                    &ldquo;{t.title}&rdquo;
+                  </h3>
+                  {body ? (
+                    <p className="mt-3 text-sm leading-6 text-[color:var(--muted)]">{body}</p>
+                  ) : null}
+                  {n || ci ? (
+                    <div className="mt-5 text-sm font-semibold">
+                      {n && ci ? (
+                        <>
+                          {n}
+                          <span className="text-[color:var(--muted)]"> • {ci}</span>
+                        </>
+                      ) : n ? (
+                        n
+                      ) : (
+                        <span className="text-[color:var(--muted)]">{ci}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
