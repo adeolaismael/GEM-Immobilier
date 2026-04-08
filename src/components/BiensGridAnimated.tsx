@@ -53,9 +53,11 @@ function BiensGridCardItem({
         }).format(bien.prix)}
       </p>
       <div className="mt-3 flex flex-wrap gap-2 text-xs text-[color:var(--muted)]">
-        <span className="rounded-full bg-white/5 px-3 py-1 ring-1 ring-white/10">
-          {bien.type === "location" ? "À louer" : "À vendre"}
-        </span>
+        {(bien.type !== "location" || bien.statut !== "loue") && (
+          <span className="rounded-full bg-white/5 px-3 py-1 ring-1 ring-white/10">
+            {bien.type === "location" ? "À louer" : "À vendre"}
+          </span>
+        )}
         <span className="rounded-full bg-white/5 px-3 py-1 ring-1 ring-white/10">
           Statut : {bien.statut.replace("_", " ")}
         </span>

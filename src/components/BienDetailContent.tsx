@@ -251,9 +251,11 @@ export function BienDetailContent({ bien }: Props) {
           </p>
           <div className="mt-4 flex items-center gap-2">
             <StatutBadge statut={bien.statut} />
-            <span className="text-sm text-[color:var(--muted)]">
-              {bien.type === "location" ? "À louer" : "À vendre"}
-            </span>
+            {(bien.type !== "location" || bien.statut !== "loue") && (
+              <span className="text-sm text-[color:var(--muted)]">
+                {bien.type === "location" ? "À louer" : "À vendre"}
+              </span>
+            )}
           </div>
           <p className="mt-4 text-2xl font-bold text-[color:var(--brand)]">
             {bien.prix === 0

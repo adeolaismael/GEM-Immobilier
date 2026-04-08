@@ -95,7 +95,11 @@ export function HomeFeaturedCards({ biens }: Props) {
                       )}
                     </div>
                     <span className="absolute top-3 right-3 rounded-full bg-white px-3 py-1 text-xs font-medium text-[color:var(--muted)] shadow-soft">
-                      {bien.type === "location" ? "À louer" : "À vendre"}
+                      {bien.statut === "loue"
+                        ? "Indisponible"
+                        : bien.type === "location"
+                          ? "À louer"
+                          : "À vendre"}
                     </span>
                   </div>
                 </Link>
