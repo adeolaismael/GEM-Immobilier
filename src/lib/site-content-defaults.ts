@@ -242,6 +242,9 @@ export const SITE_CONTENT_DEFAULTS: Record<SitePageSlug, Record<string, string>>
     back_link: "← Retour à propos",
     h1: "Galerie photos",
     intro: "Images liées à l'agence uniquement. Les photos des biens à vendre ou à louer se trouvent dans Nos offres.",
+    galerie_organigramme_heading: "Équipe de gestion de GEM IMMOBILIER",
+    galerie_organigramme_image: "/galerie-photos/organigramme/organigramme-gem.png",
+    galerie_album_heading: "Photos",
     galerie_images_json: "[]",
   },
   services: {
@@ -363,6 +366,7 @@ export const SITE_CONTENT_SINGLE_IMAGE_FIELDS: Partial<
 > = {
   accueil: ["image_hero_main", "image_hero_side", "image_about"],
   "a-propos-qui-sommes-nous": ["image_histoire"],
+  "a-propos-galerie": ["galerie_organigramme_image"],
 };
 
 export function isSiteContentSingleImageField(
@@ -384,6 +388,17 @@ export const SITE_CONTENT_HERO_IMAGE_FALLBACK_KEYS: Partial<
   Record<SitePageSlug, readonly string[]>
 > = {
   accueil: ["image_hero_main", "image_hero_side"],
+};
+
+/** Si chaînes vides en base (anciennes sauvegardes), rétablit titres + image organigramme / album. */
+export const SITE_CONTENT_GALERIE_FALLBACK_KEYS: Partial<
+  Record<SitePageSlug, readonly string[]>
+> = {
+  "a-propos-galerie": [
+    "galerie_organigramme_image",
+    "galerie_organigramme_heading",
+    "galerie_album_heading",
+  ],
 };
 
 /** Ordre d’affichage des champs dans l’admin (clés omises sont ajoutées à la fin). */
@@ -497,6 +512,9 @@ export const SITE_CONTENT_FIELD_ORDER: Record<SitePageSlug, string[]> = {
     "back_link",
     "h1",
     "intro",
+    "galerie_organigramme_heading",
+    "galerie_organigramme_image",
+    "galerie_album_heading",
     "galerie_images_json",
   ],
   services: [
@@ -668,8 +686,12 @@ export function siteContentFieldLabel(slug: SitePageSlug, key: string): string {
       image_histoire: "Photo — Encadré « Notre histoire » (vide = visuel GEM)",
     },
     "a-propos-galerie": {
+      galerie_organigramme_heading: "Titre au-dessus de l’organigramme (séparé des autres photos)",
+      galerie_organigramme_image:
+        "Image organigramme (fichier statique possible dans /public/galerie-photos/organigramme/)",
+      galerie_album_heading: "Titre au-dessus de la grille des autres photos",
       galerie_images_json:
-        "Galerie « À propos » uniquement (une image par entrée ; pas les annonces)",
+        "Toutes les autres photos de la galerie — uploadées dans le dossier « galerie-album » du stockage",
     },
     "a-propos-mission-valeurs": {
       mission_h2: "Bloc — Titre mission",

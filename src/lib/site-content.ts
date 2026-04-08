@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase";
 import {
   SITE_CONTENT_DEFAULTS,
   SITE_CONTENT_GALLERY_JSON_KEY,
+  SITE_CONTENT_GALERIE_FALLBACK_KEYS,
   SITE_CONTENT_HERO_IMAGE_FALLBACK_KEYS,
   type SitePageSlug,
 } from "@/lib/site-content-defaults";
@@ -22,6 +23,9 @@ export function mergeSiteContent(
     if (typeof v === "string") out[k] = v;
   }
   for (const key of SITE_CONTENT_HERO_IMAGE_FALLBACK_KEYS[slug] ?? []) {
+    if (!out[key]?.trim()) out[key] = defaults[key];
+  }
+  for (const key of SITE_CONTENT_GALERIE_FALLBACK_KEYS[slug] ?? []) {
     if (!out[key]?.trim()) out[key] = defaults[key];
   }
   if (slug === "a-propos-galerie" && out[SITE_CONTENT_GALLERY_JSON_KEY]) {
@@ -77,6 +81,9 @@ export function normalizeSiteContentFromAdmin(
   }
 
   for (const key of SITE_CONTENT_HERO_IMAGE_FALLBACK_KEYS[slug] ?? []) {
+    if (!out[key]?.trim()) out[key] = defaults[key];
+  }
+  for (const key of SITE_CONTENT_GALERIE_FALLBACK_KEYS[slug] ?? []) {
     if (!out[key]?.trim()) out[key] = defaults[key];
   }
 

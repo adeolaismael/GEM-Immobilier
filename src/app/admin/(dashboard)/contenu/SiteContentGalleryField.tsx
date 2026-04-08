@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { parseSiteGalleryJson } from "@/lib/site-galerie";
+import { GALERIE_ALBUM_STORAGE_FOLDER, parseSiteGalleryJson } from "@/lib/site-galerie";
 
 type Props = {
   value: string;
@@ -59,7 +59,9 @@ export function SiteContentGalleryField({ value, onChange, slug }: Props) {
   return (
     <div className="mt-2 space-y-4">
       <p className="text-xs text-gray-500">
-        Uniquement la galerie « À propos » (agence). Les photos des biens se gèrent dans Biens, pas ici.
+        Photos hors organigramme uniquement : chaque upload est placé dans le dossier « {GALERIE_ALBUM_STORAGE_FOLDER}
+        » du bucket (avec l’organigramme, utiliser le champ image dédié plus haut). Fichiers statiques possibles dans{" "}
+        <code className="rounded bg-black/5 px-1">public/galerie-photos/album/</code>. Les biens se gèrent dans Biens.
       </p>
       {err && <p className="text-sm text-red-600">{err}</p>}
 

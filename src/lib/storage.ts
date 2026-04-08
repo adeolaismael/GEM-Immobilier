@@ -1,4 +1,8 @@
 import { createSupabaseAdminClient } from "./supabase-admin";
+import {
+  GALERIE_ALBUM_STORAGE_FOLDER,
+  GALERIE_ORGANIGRAMME_STORAGE_FOLDER,
+} from "./site-galerie";
 
 const BUCKET = "bien-photos";
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -77,6 +81,7 @@ export async function deletePhoto(url: string): Promise<void> {
 export async function uploadSiteContentImage(
   file: Blob | File,
   pageSlug: string,
+  fieldKey?: string,
 ): Promise<string> {
   const mime = file.type;
   if (!ALLOWED_TYPES.includes(mime)) {
@@ -89,7 +94,19 @@ export async function uploadSiteContentImage(
   const safeSlug = String(pageSlug).replace(/[^a-z0-9-]/gi, "-").slice(0, 64);
   const supabase = createSupabaseAdminClient();
   const ext = getExtension(mime);
-  const path = `site-content/${safeSlug}/${crypto.randomUUID()}.${ext}`;
+
+  let inner: string;
+  if (pageSlug === "a-propos-galerie") {
+    if (fieldKey === "galerie_organigramme_image") {
+      inner = `${GALERIE_ORGANIGRAMME_STORAGE_FOLDER}/${crypto.randomUUID()}.${ext}`;
+    } else {
+      inner = `${GALERIE_ALBUM_STORAGE_FOLDER}/${crypto.randomUUID()}.${ext}`;
+    }
+  } else {
+    inner = `${crypto.randomUUID()}.${ext}`;
+  }
+
+  const path = `site-content/${safeSlug}/${inner}`;
 
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
     contentType: mime,

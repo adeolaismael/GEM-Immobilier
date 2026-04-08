@@ -32,6 +32,7 @@ export function SiteContentImageField({ slug, fieldKey, value, onChange }: Props
       const fd = new FormData();
       fd.append("file", file);
       fd.append("slug", slug);
+      fd.append("fieldKey", fieldKey);
       const res = await fetch("/api/admin/site-content/upload", {
         method: "POST",
         body: fd,

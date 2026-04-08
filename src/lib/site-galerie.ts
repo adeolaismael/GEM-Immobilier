@@ -1,3 +1,9 @@
+/** Stockage Supabase : sous-dossier pour l’organigramme (hors album). */
+export const GALERIE_ORGANIGRAMME_STORAGE_FOLDER = "organigramme";
+
+/** Stockage Supabase : toutes les autres photos de la galerie (hors organigramme). */
+export const GALERIE_ALBUM_STORAGE_FOLDER = "galerie-album";
+
 export type GaleriePhotoRow = { id: string; url: string; bien_id: string };
 
 export type SiteGalleryEntry = { id: string; url: string };
