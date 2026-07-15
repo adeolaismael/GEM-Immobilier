@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { slugifyArticleTitle } from "@/lib/articles";
+import { revalidateArticlesPublic } from "@/lib/revalidate-public";
 
 function normalizeSlug(slug: string): string {
   return slugifyArticleTitle(slug);
@@ -58,5 +59,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateArticlesPublic();
   return NextResponse.json(data);
 }

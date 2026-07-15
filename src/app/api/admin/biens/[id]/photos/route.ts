@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { uploadPhoto } from "@/lib/storage";
+import { revalidateBiensPublic } from "@/lib/revalidate-public";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -72,6 +73,7 @@ export async function POST(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    revalidateBiensPublic();
     return NextResponse.json(data);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Erreur lors de l'upload.";

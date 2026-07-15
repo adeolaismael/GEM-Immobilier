@@ -5,6 +5,7 @@ import {
   normalizeSiteContentFromAdmin,
 } from "@/lib/site-content";
 import { isSitePageSlug } from "@/lib/site-content-defaults";
+import { revalidateSitePage } from "@/lib/revalidate-public";
 
 export async function GET(
   _request: Request,
@@ -69,5 +70,6 @@ export async function PUT(
     );
   }
 
+  revalidateSitePage(slug);
   return NextResponse.json({ slug, content: normalized });
 }

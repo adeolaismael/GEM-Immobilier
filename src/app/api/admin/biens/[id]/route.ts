@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import { revalidateBiensPublic } from "@/lib/revalidate-public";
 
 export async function PUT(
   request: Request,
@@ -84,6 +85,7 @@ export async function PUT(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateBiensPublic();
   return NextResponse.json(data);
 }
 
@@ -122,6 +124,7 @@ export async function DELETE(
       console.error("[api/admin/biens] DELETE permanent error", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+    revalidateBiensPublic();
     return NextResponse.json({ success: true });
   }
 
@@ -137,5 +140,6 @@ export async function DELETE(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateBiensPublic();
   return NextResponse.json({ success: true });
 }

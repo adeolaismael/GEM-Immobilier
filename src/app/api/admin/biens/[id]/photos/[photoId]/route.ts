@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { deletePhoto } from "@/lib/storage";
+import { revalidateBiensPublic } from "@/lib/revalidate-public";
 
 /** Définit cette photo comme couverture (les autres passent à non principales). */
 export async function PATCH(
@@ -57,6 +58,7 @@ export async function PATCH(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateBiensPublic();
   return NextResponse.json(data);
 }
 
@@ -113,5 +115,6 @@ export async function DELETE(
     return NextResponse.json({ error: deleteError.message }, { status: 500 });
   }
 
+  revalidateBiensPublic();
   return NextResponse.json({ success: true });
 }

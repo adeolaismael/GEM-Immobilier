@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import { revalidateBiensPublic } from "@/lib/revalidate-public";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -64,5 +65,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  revalidateBiensPublic();
   return NextResponse.json(data);
 }

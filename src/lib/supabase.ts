@@ -17,6 +17,12 @@ export function createBrowserSupabaseClient(): SupabaseClient {
 
 /** Client serveur pour données publiques (biens, agents) sans session. */
 export function createServerSupabaseClient(): SupabaseClient {
-  return createClient(supabaseUrl, supabaseAnonKey);
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      // Évite le cache Next.js qui fige le site public après le déploiement.
+      fetch: (url, options = {}) =>
+        fetch(url, { ...options, cache: "no-store" }),
+    },
+  });
 }
 

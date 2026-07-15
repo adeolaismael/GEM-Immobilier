@@ -7,6 +7,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { getMetadataBase } from "@/lib/site-url";
 
+/** Contenu CMS : toujours à jour après une modification dans l’admin. */
+export const dynamic = "force-dynamic";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

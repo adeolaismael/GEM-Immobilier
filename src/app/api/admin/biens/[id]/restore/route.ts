@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import { revalidateBiensPublic } from "@/lib/revalidate-public";
 
 export async function POST(
   _request: Request,
@@ -29,5 +30,6 @@ export async function POST(
     );
   }
 
+  revalidateBiensPublic();
   return NextResponse.json({ success: true });
 }
