@@ -15,13 +15,29 @@ export function createBrowserSupabaseClient(): SupabaseClient {
   return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
 
+type ServerClientOptions = {
+  /** Pour sitemap / robots : génération ISR, pas de no-store. */
+  revalidateSeconds?: number;
+};
+
 /** Client serveur pour données publiques (biens, agents) sans session. */
-export function createServerSupabaseClient(): SupabaseClient {
+export function createServerSupabaseClient(
+  options?: ServerClientOptions,
+): SupabaseClient {
+  const revalidateSeconds = options?.revalidateSeconds;
+
   return createClient(supabaseUrl, supabaseAnonKey, {
     global: {
-      // Évite le cache Next.js qui fige le site public après le déploiement.
-      fetch: (url, options = {}) =>
-        fetch(url, { ...options, cache: "no-store" }),
+      fetch: (url, init = {}) => {
+        if (typeof revalidateSeconds === "number") {
+          return fetch(url, {
+            ...init,
+            next: { revalidate: revalidateSeconds },
+          });
+        }
+        // Pages CMS : toujours à jour après une modification admin.
+        return fetch(url, { ...init, cache: "no-store" });
+      },
     },
   });
 }

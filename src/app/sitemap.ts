@@ -3,6 +3,9 @@ import { getBiensPourSitemap } from "@/lib/biens";
 import { SERVICE_SLUGS } from "@/lib/services-catalog";
 import { getSiteUrl } from "@/lib/site-url";
 
+/** Régénère le sitemap au plus toutes les heures (évite le conflit no-store au build). */
+export const revalidate = 3600;
+
 const STATIC_ROUTES: { path: string; priority: number }[] = [
   { path: "/", priority: 1.0 },
   { path: "/biens", priority: 0.7 },

@@ -149,7 +149,8 @@ export async function getBiensExcluding(excludeId: string, limit = 3): Promise<B
 export async function getBiensPourSitemap(): Promise<
   { slug: string; updated_at: string }[]
 > {
-  const supabase = createServerSupabaseClient();
+  // ISR : compatible avec la génération de /sitemap.xml au build.
+  const supabase = createServerSupabaseClient({ revalidateSeconds: 3600 });
 
   const { data, error } = await supabase
     .from("biens")
