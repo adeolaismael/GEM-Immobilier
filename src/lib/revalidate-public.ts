@@ -27,10 +27,8 @@ export function revalidateSitePage(slug: SitePageSlug): void {
   for (const path of list) {
     revalidatePath(path);
   }
-  // Footer / header partagés
-  if (slug === "coordonnees-agence") {
-    revalidatePath("/", "layout");
-  }
+  // Footer (coordonnées) + pages partagées dans le layout racine
+  revalidatePath("/", "layout");
 }
 
 export function revalidateBiensPublic(): void {

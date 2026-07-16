@@ -15,30 +15,8 @@ export function createBrowserSupabaseClient(): SupabaseClient {
   return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
 
-type ServerClientOptions = {
-  /** Pour sitemap / robots : génération ISR, pas de no-store. */
-  revalidateSeconds?: number;
-};
-
 /** Client serveur pour données publiques (biens, agents) sans session. */
-export function createServerSupabaseClient(
-  options?: ServerClientOptions,
-): SupabaseClient {
-  const revalidateSeconds = options?.revalidateSeconds;
-
-  return createClient(supabaseUrl, supabaseAnonKey, {
-    global: {
-      fetch: (url, init = {}) => {
-        if (typeof revalidateSeconds === "number") {
-          return fetch(url, {
-            ...init,
-            next: { revalidate: revalidateSeconds },
-          });
-        }
-        // Pages CMS : toujours à jour après une modification admin.
-        return fetch(url, { ...init, cache: "no-store" });
-      },
-    },
-  });
+export function createServerSupabaseClient(): SupabaseClient {
+  return createClient(supabaseUrl, supabaseAnonKey);
 }
 
